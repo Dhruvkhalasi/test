@@ -3,33 +3,39 @@ name: Release and Push Docker Image
 on:
   push:
     branches:
-      - main
+      - main  # Trigger on push to the main branch (or your default branch)
 
 jobs:
   release:
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout the repository code
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Ensures full history for semantic-release
 
+      # Step 2: Set up Node.js with the correct version (Node.js >=20.8.1)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
+          node-version: '20.x'  # Ensure you're using Node.js 20 or higher
 
+      # Step 3: Install dependencies (including semantic-release and plugins)
       - name: Install Dependencies
         run: npm install
 
+      # Step 4: Run Semantic Release
       - name: Run Semantic Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication
         run: npx semantic-release
 
   build-and-push:
-    needs: release
+    needs: release  # Ensures that this step runs only after the release step completes
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
